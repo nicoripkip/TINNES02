@@ -1,0 +1,16 @@
+{
+  "name": "exercise1",
+  "version": "1.0.0",
+  "description": "This app is a frontend to a mqtt chatapp",
+  "main": "app/app.js",
+  "scripts": {
+    "dev": "node app/app.js"
+  },
+  "author": "Nico van Ommen",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "mqtt": "^5.10.4"
+  }
+}
