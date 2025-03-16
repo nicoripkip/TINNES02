@@ -1,6 +1,11 @@
-FROM node
-WORKDIR /app
-COPY package.json /app
+FROM node:latest
+WORKDIR /usr/src/app
+
+COPY package*.json ./
 RUN npm install
-COPY . /app
-CMD ["npm", "run", "dev"]
+COPY . ./
+
+USER root
+EXPOSE 80
+
+CMD ["node", "./app/app.js"]

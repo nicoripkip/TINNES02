@@ -1,9 +1,16 @@
 services:
     web:
-      image: node:latest
+      image: chatapp_nico:latest
+      build:
+        context: .
+        dockerfile: ./Dockerfile
       ports:
         - "443:443"
         - "80:80"
+      tty: true
+      depends_on:
+        mosquitto:
+          condition: service_started
       
     mosquitto:
       image: eclipse-mosquitto:latest
