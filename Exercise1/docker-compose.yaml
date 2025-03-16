@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+    web:
+      image: node:latest
+      ports:
+        - "443:80"
+      
+    mosquitto:
+      image: eclipse-mosquitto:latest
+      ports:
+        - "1883:1884"

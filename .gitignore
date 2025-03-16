@@ -1,2 +1,6 @@
+# Some node shit
 Exercise1/node_modules
 Exercise1/package-lock.json
+
+# All real configuration files in .gitignore, leave them only with *-example
+Exercise1/config/.env
