@@ -21,7 +21,7 @@
             </div>
             <div class="row">
                 <div class="col-3"></div>
-                <div class="col-6" style="border: 1px solid black; height: 600px">
+                <div class="col-6" id="message-box" style="border: 1px solid black; height: 600px">
 
                 </div>
                 <div class="col-3"></div>
@@ -30,12 +30,12 @@
                 <div class="col-3"></div>
                 <div class="col-6">
                     <div class="row">
-                        <div class="col-8">
-
+                        <div class="col-9">
+                            <input type="text" id="message-text" class="form-control" placeholder="message" />
                         </div>
-                        <div class="col-4">
-                            <button>
-
+                        <div class="col-3">
+                            <button class="btn btn-primary mb-3" onclick="">
+                                Send
                             </button>
                         </div>
                     </div>
@@ -47,16 +47,41 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
         <script>
+            // Connect to the mqtt server in the vlan network
             const mqttClient = mqtt.connect("mqtt://127.0.0.1:1883")
+            const messageBox = document.getElementById("message-box")
+            let messageBuffer = []
 
+            // Function to send a message to the mqtt broker
+            function sendMessage()
+            {
+                console.log("Try to send a message to the client")
+
+                let textMessage = document.getElementById("message-text")
+
+                mqttClient.publish("tinnes02/chatapp", textMessage.value)
+            }
+
+            // Function to create a message bubble
+            function createMessageBubble()
+            {
+
+            }
+
+            // Trigger a connect callback when the client is connected
             mqttClient.on('connect', () => {
                 console.log('Connected to broker')
 
-                mqttClient.subscribe('test/topic', (err) => {
+                mqttClient.subscribe('tinnes02/chatapp', (err) => {
                     if (!err) {
-                        console.log('Subscribed to test/topic')
+                        console.log('Subscribed to tinnes02/chatapp')
                     }
                 });
+            });
+
+
+            mqttClient.on('message', (topic, message) => {
+                console.log(`Received message: ${message.toString()}`);
             });
         </script>
     </body>
