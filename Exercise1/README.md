@@ -19,6 +19,7 @@ This exercise is also about security. The chatapp needs to be protected with TLS
 
 - express
 - mqtt.js
+- ejs
 
 ## Installation
 
