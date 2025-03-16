@@ -4,3 +4,8 @@ Exercise1/package-lock.json
 
 # All real configuration files in .gitignore, leave them only with *-example
 Exercise1/config/.env
+
+
+# All logs
+Exercise1/mosquitto/log/mosquitto.log
+Exercise1/mosquitto/data/mosquitto.db
