@@ -9,3 +9,7 @@ Exercise1/config/.env
 # All logs
 Exercise1/mosquitto/log/mosquitto.log
 Exercise1/mosquitto/data/mosquitto.db
+
+# Ignore certs
+Exercise1/certs/cert.pem
+Exercise1/certs/key.pem
