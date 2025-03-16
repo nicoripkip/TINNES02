@@ -25,13 +25,22 @@ This exercise is also about security. The chatapp needs to be protected with TLS
 
 The configuration files for the mosquitto container can be found in the folder:
 ```
-./mosquitto/config
+./mosquitto/config/mosquitto.conf
+./mosquitto/config/pw.txt
 ```
 
 The TLS certificates can be found under:
 ```
-./certs
+./certs/cert.pem
+./certs/key.pem
 ```
+This certificate is selfsigned by me.
+
+The webserver is written in express js. The file can be found under: 
+```
+./app/app.js
+```
+This file contains all the code for configuring the webserver. Features can be added to this file
 
 
 ## Installation
