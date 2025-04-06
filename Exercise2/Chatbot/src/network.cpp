@@ -5,44 +5,31 @@
 #include "secret.h"
 #include "PubSubClient.h"
 #include <time.h>
+#include <string.h>
 
 
 WiFiClientSecure    wifi_client;
 PubSubClient        mqtt_client;
 
-void printLocalTime(){
-    struct tm timeinfo;
-    if(!getLocalTime(&timeinfo)){
-      Serial.println("Failed to obtain time");
-      return;
+
+/**
+ * @brief Method that handles all the callback logic for the mqtt handler
+ * 
+ * @param topic
+ * @param payload
+ * @param length
+ */
+void mqttCallback(const char *topic, byte *payload, unsigned int length)
+{
+    Serial.println("Message received");
+
+    Serial.print("Message: ");
+    for (int i = 0; i < length; i++) {
+        Serial.print((char)payload[i]);
     }
-    Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-    Serial.print("Day of week: ");
-    Serial.println(&timeinfo, "%A");
-    Serial.print("Month: ");
-    Serial.println(&timeinfo, "%B");
-    Serial.print("Day of Month: ");
-    Serial.println(&timeinfo, "%d");
-    Serial.print("Year: ");
-    Serial.println(&timeinfo, "%Y");
-    Serial.print("Hour: ");
-    Serial.println(&timeinfo, "%H");
-    Serial.print("Hour (12 hour format): ");
-    Serial.println(&timeinfo, "%I");
-    Serial.print("Minute: ");
-    Serial.println(&timeinfo, "%M");
-    Serial.print("Second: ");
-    Serial.println(&timeinfo, "%S");
-  
-    Serial.println("Time variables");
-    char timeHour[3];
-    strftime(timeHour,3, "%H", &timeinfo);
-    Serial.println(timeHour);
-    char timeWeekDay[10];
-    strftime(timeWeekDay,10, "%A", &timeinfo);
-    Serial.println(timeWeekDay);
-    Serial.println();
-  }
+    Serial.println("");
+}
+
 
 
 /**
@@ -66,28 +53,16 @@ void init_network()
     Serial.println("Connected to wifi!!");
 
     // Sync time with the time server
+    Serial.println("Trying to sync time!");
     configTime(0, (3600 * 2), "ntppool1.time.nl", "ntppool2.time.nl");
 
-    Serial.println("Trying to sync time!");
-    printLocalTime();
-    // time_t now = time(nullptr);
-
-    // while (now < 100000) {
-    //     Serial.print(".");
-    //     now = time(nullptr);
-    // }
-
-    // struct tm time_info;
-    // gmtime_r(&now, &time_info);
-
     // Set CA cert for wifi client
-    
-    // wifi_client.setInsecure();
     wifi_client.setCACert(local_root_ca);
 
     // Setup the mqtt stuff
     mqtt_client.setClient(wifi_client);
     mqtt_client.setServer(MQTT_HOST, MQTT_PORT);
+    mqtt_client.setCallback(mqttCallback);
 }
 
 
@@ -107,10 +82,20 @@ void connect_mqtt_server()
     }
 
     Serial.println("ESP32 is connected to the MQTT server!");
+
+    Serial.println("ESP32 tries to subscribe to topic!");
+    mqtt_client.subscribe("chat/message");
+    Serial.println("ESP32 has succesfully subscribed to topic!");
 }
 
 
 void disconnect_mqtt_server()
 {
 
+}
+
+
+void poll_mqtt()
+{
+    mqtt_client.loop();
 }

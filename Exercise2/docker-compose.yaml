@@ -1,0 +1,10 @@
+services:
+  web:
+    image: chatapp_nico:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "80:443"
+      - "443:443"
+    tty: true

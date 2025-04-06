@@ -1,6 +1,8 @@
 # Some node shit
 Exercise1/node_modules
 Exercise1/package-lock.json
+Exercise2/node_modules
+Exercise2/package-lock.json
 
 # All real configuration files in .gitignore, leave them only with *-example
 Exercise1/config/.env
@@ -13,3 +15,5 @@ Exercise1/mosquitto/data/mosquitto.db
 # Ignore certs
 Exercise1/certs/cert.pem
 Exercise1/certs/key.pem
+Exercise2/certs/cert.pem
+Exercise2/certs/key.pem
