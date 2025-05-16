@@ -130,7 +130,7 @@ client.on("message", (topic, message) => {
  */
 btn.onclick = () => {
     if (input.value.length > 0) {
-        client.publish(room, USER.name.concat(":".concat(input.value)), { 
+        client.publish(room, input.value, { 
             retain: false, 
             qos: 2 
         })

@@ -6,10 +6,13 @@
 #include "PubSubClient.h"
 #include <time.h>
 #include <string.h>
+#include <DHT.h>
+#include <DHT_U.h>
 
 
-WiFiClientSecure    wifi_client;
-PubSubClient        mqtt_client;
+WiFiClientSecure        wifi_client;
+PubSubClient            mqtt_client;
+static DHT_Unified*     sdht = nullptr;
 
 
 /**
@@ -23,11 +26,85 @@ void mqttCallback(const char *topic, byte *payload, unsigned int length)
 {
     Serial.println("Message received");
 
-    Serial.print("Message: ");
-    for (int i = 0; i < length; i++) {
-        Serial.print((char)payload[i]);
+    char buff[10];
+    memset(buff, 0, 10);
+
+    // Make sure the first 10 bytes or smaller are collected for the commands
+    size_t copy_len = length < 10 ? length : 10;
+    memcpy(buff, payload, copy_len);
+    buff[9] = '\0';
+
+    char b[100];
+
+    // This command is to test the bot
+    if (strcmp(buff, "#test") == 0) {
+        memset(b, 0, 100);
+
+        sprintf(b, "The ESP32 chatbot is online");
+
+        mqtt_client.publish("chat/message", b);
+
+    // This command is to collect information from the temperatrure
+    } else if (strcmp(buff, "#temp") == 0) {
+        memset(b, 0, 100);
+        
+        sensors_event_t event;
+        sdht->temperature().getEvent(&event);
+        if (isnan(event.temperature)) {
+            sprintf(b, "Error reading temperature!");
+            Serial.println(F("Error reading temperature!"));
+            mqtt_client.publish("chat/message", b);
+        }
+        else {
+            Serial.print(F("Temperature: "));
+            Serial.print(event.temperature);
+            Serial.println(F("°C"));
+
+            sprintf(b, "Current temperature is: %.2f°C!", event.temperature);
+
+            mqtt_client.publish("chat/message", b);
+        }
+        // This command is to collect information from the humidity
+    } else if (strcmp(buff, "#humidity") == 0) {
+        memset(b, 0, 100);
+        sensors_event_t event;
+        sdht->humidity().getEvent(&event);
+        if (isnan(event.relative_humidity)) {
+            sprintf(b, "Error reading humidity!");
+
+            Serial.println(F("Error reading humidity!"));
+
+            mqtt_client.publish("chat/message", b);
+        }
+        else {
+            Serial.print(F("Humidity: "));
+            Serial.print(event.relative_humidity);
+            Serial.println(F("%"));
+
+            sprintf(b, "Current humidity is: %.2f%!", event.relative_humidity);
+
+            mqtt_client.publish("chat/message", b);
+        }
+        // This command is to turn the led on
+    } else if (strcmp(buff, "#led:on") == 0) {
+        memset(b, 0, 100);
+
+        sprintf(b, "Led is on!");
+
+        digitalWrite(16, HIGH);
+
+        mqtt_client.publish("chat/message", b);
+
+         // This command is to turn the led off
+    } else if (strcmp(buff, "#led:off") == 0) {
+        memset(b, 0, 100);
+
+        sprintf(b, "Led is off!");
+
+        digitalWrite(16, LOW);
+
+        mqtt_client.publish("chat/message", b);
     }
-    Serial.println("");
 }
 
 
@@ -89,13 +166,34 @@ void connect_mqtt_server()
 }
 
 
+/**
+ * @brief Function to disconnect the mqtt server
+ * 
+ * 
+ */
 void disconnect_mqtt_server()
 {
 
 }
 
 
+/**
+ * @brief Function polls the mqtt server and makes sure all trafic is processed
+ * 
+ * 
+ */
 void poll_mqtt()
 {
     mqtt_client.loop();
+}
+
+
+/**
+ * @brief Function works as a passthrough function for the dht class
+ * 
+ * @param dht
+ */
+void add_dht_sensor(DHT_Unified *dht)
+{
+    sdht = dht;
 }
